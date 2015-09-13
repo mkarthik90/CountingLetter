@@ -1,0 +1,13 @@
+import java.util.HashMap;
+
+
+public class Add2Numbers {
+
+	public static void main(String[] args) {
+
+		Map testing = new HashMap();
+		testing.put("q", "q")
+		System.out.println(testing);
+	}
+
+}

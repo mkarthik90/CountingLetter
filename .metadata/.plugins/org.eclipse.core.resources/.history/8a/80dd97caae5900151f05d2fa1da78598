@@ -1,0 +1,23 @@
+import java.util.HashMap;
+import java.util.Map;
+
+
+public class InputProcess {
+
+	public static void main(String[] args) {
+		
+		
+
+		Map<String,String> testing = new HashMap<String,String>();
+		
+		for(int i=0;i<args.length;i++){
+			testing.put("file-1",args[0]);
+		}
+		
+		
+		
+		testing.forEach((k,v)->System.out.println(k+" "+v));
+		
+	}
+
+}

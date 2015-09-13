@@ -1,0 +1,18 @@
+import java.util.HashMap;
+import java.util.Map;
+
+
+public class Add2Numbers {
+
+	public static void main(String[] args) {
+
+		Map<String,String> testing = new HashMap<String,String>();
+		testing.put("Processnumber",args[0]);
+		testing.put("q", "q");
+		testing.put("w", "w");
+		
+		testing.forEach((k,v)->System.out.println(k+" "+v));
+		
+	}
+
+}

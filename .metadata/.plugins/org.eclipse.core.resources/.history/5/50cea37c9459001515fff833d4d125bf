@@ -1,0 +1,17 @@
+
+public class Processes {
+
+	public static void main(String[] args) {
+		 Process p = null;
+	      try {
+	         p = Runtime.getRuntime().exec("javac Add2Numbers.java");  // Compile
+	      } catch (java.io.IOException ex) {}
+	 
+	      // Wait for the process to complete
+	      try {
+	         int exitValue = p.waitFor();
+	         System.out.println("Process Completed with exit value of " + exitValue);
+	      } catch (InterruptedException ex) {}
+	}
+
+}

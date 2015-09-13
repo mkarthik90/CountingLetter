@@ -1,0 +1,116 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Processor {
+
+	public static void main(String[] args) throws Exception {
+
+		String[] fileNames = { "all_is_well.txt", "anthony_and_cleopatra.txt",
+				"as_you_like_it.txt", "comedy_of_errors.txt", "coriolanus.txt",
+				"cymbeline.txt", "hamlet.txt", "king_lear.txt",
+				"merry_wives.txt", "midnight_summer_dream.txt", "much_ado.txt" };
+		
+		String[] outputTempFileName = {"outputFileNameTemp1.txt","outputFileNameTemp2.txt","outputFileNameTemp3.txt","outputFileNameTemp4.txt"};
+
+		Process p1, p2, p3, p4 = null;
+		// Forking New Process
+
+		ProcessBuilder pb = new ProcessBuilder("java", "InputProcess",
+				fileNames[0], fileNames[1], fileNames[2],outputTempFileName[0]);
+		ProcessBuilder pb1 = new ProcessBuilder("java", "InputProcess",
+				fileNames[3], fileNames[4], fileNames[5],outputTempFileName[1]);
+		ProcessBuilder pb2 = new ProcessBuilder("java", "InputProcess",
+				fileNames[6], fileNames[7], fileNames[8],outputTempFileName[2]);
+		ProcessBuilder pb3 = new ProcessBuilder("java", "InputProcess",
+				fileNames[9], fileNames[10],outputTempFileName[3]);
+
+		// p1 =
+		// Runtime.getRuntime().exec("java InputProcess "+fileNames[1]+" "+fileNames[2]+" "+fileNames[3]);
+		// // Compile
+		// p2 =
+		// Runtime.getRuntime().exec("java InputProcess "+fileNames[4]+" "+fileNames[5]+" "+fileNames[6]);
+		// // Compile
+		// p3 =
+		// Runtime.getRuntime().exec("java InputProcess "+fileNames[7]+" "+fileNames[8]+" "+fileNames[9]);
+		// // Compile
+		p1 = pb.start();
+		p2 = pb1.start();
+		p3 = pb2.start();
+		p4 = pb3.start();
+
+		
+		
+		BufferedReader pout1 = new BufferedReader(new InputStreamReader(
+				p1.getInputStream()));
+		BufferedReader pout2 = new BufferedReader(new InputStreamReader(
+				p2.getInputStream()));
+		BufferedReader pout3 = new BufferedReader(new InputStreamReader(
+				p3.getInputStream()));
+		BufferedReader pout4 = new BufferedReader(new InputStreamReader(
+				p4.getInputStream()));
+
+		String ch;
+
+		
+		
+		
+		
+		Map bucket1 = new HashMap();
+		Map bucket2 = new HashMap();
+		Map bucket3 = new HashMap();
+		Map bucket4 = new HashMap();
+
+		
+		
+		
+		/*while ((ch = pout2.readLine()) != null) {
+			String[] keyValuePair = ch.split(" ");
+			bucket2.put(keyValuePair[0], keyValuePair[1]);
+		}
+
+		while ((ch = pout1.readLine()) != null) {
+			String[] keyValuePair = ch.split(" ");
+			bucket1.put(keyValuePair[0], keyValuePair[1]);
+		}
+
+		
+		
+		
+		while ((ch = pout3.readLine()) != null) {
+			String[] keyValuePair = ch.split(" ");
+			bucket3.put(keyValuePair[0], keyValuePair[1]);
+		}
+		
+		
+		while ((ch = pout4.readLine()) != null) {
+			String[] keyValuePair = ch.split(" ");
+			bucket4.put(keyValuePair[0], keyValuePair[1]);
+		}*/
+		
+		
+		p1.waitFor();
+		p2.waitFor();
+		
+		//Creating output Processes to be called and write to the persistent storage
+		
+		ProcessBuilder pbOut1 = new ProcessBuilder("java", "OutputProcess",outputTempFileName[0],outputTempFileName[1]);
+		Process processOut1 = pbOut1.start();
+		System.out.println("Inside---1");
+		
+		p3.waitFor();
+		p4.waitFor();
+		processOut1.waitFor();
+		System.out.println("Inside---2");
+		ProcessBuilder pbOut2 = new ProcessBuilder("java", "OutputProcess",outputTempFileName[2],outputTempFileName[3]);
+		//Process processOut2 = pbOut2.start();
+		//processOut2.waitFor();
+		/*System.out.println(bucket1);
+		System.out.println(bucket2);
+		System.out.println(bucket3);
+		System.out.println(bucket4);*/
+
+	}
+
+}

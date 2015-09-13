@@ -1,0 +1,67 @@
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+
+public class InputProcess {
+
+	public static void main(String[] args) {
+		
+		
+
+		Map<String,String> testing = new HashMap<String,String>();
+		
+
+		try {
+			
+			int bucketName = Integer.parseInt(Thread.currentThread().getName());
+			while (sc.hasNextLine()) {
+				Scanner s2 = new Scanner(sc.nextLine());
+				while (s2.hasNext()) {
+					String word = s2.next();
+					Map wordMap = (Map) mapperWordList.get(bucketName);
+					if (wordMap == null)
+						wordMap = new HashMap();
+					if (wordMap.get(word) != null) {
+						int count = Integer.parseInt(wordMap.get(word)
+								.toString());
+						count++;
+						wordMap.put(word, count);
+						/* System.out.println(word + " " + count); */
+					} else {
+						wordMap.put(word, 1);
+					}
+
+					mapperWordList.put(bucketName, wordMap);
+				}
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+	
+		
+		for(int i=0;i<args.length;i++){
+			//No of files to be read
+			Scanner sc = new Scanner(new File(args[i]));
+			while (s2.hasNext()) {
+				Sanner s2 = new Scanner(sc.nextLine());
+				while (s2.hasNext()) {
+					
+				}
+			}
+			
+			
+			
+			
+			
+			
+		}
+		
+		
+		testing.forEach((k,v)->System.out.println(k+" "+v));
+		
+	}
+
+}

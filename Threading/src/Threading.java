@@ -1,0 +1,147 @@
+import java.awt.font.NumericShaper;
+import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class Threading implements Runnable {
+
+	static int numberOfMapperThreads = 11;
+	static int numberOfReducersThreads = 2;
+	static int totalNumberOfThreads = numberOfMapperThreads
+			+ numberOfReducersThreads;
+
+	static String[] fileNames = { "all_is_well.txt",
+			"anthony_and_cleopatra.txt", "as_you_like_it.txt",
+			"comedy_of_errors.txt", "coriolanus.txt", "cymbeline.txt",
+			"hamlet.txt", "king_lear.txt", "merry_wives.txt",
+			"midnight_summer_dream.txt", "much_ado.txt" };
+
+	static Map mapperWordList = Collections.synchronizedMap(new HashMap());
+	static ConcurrentHashMap<String, Integer> finalMapperWordList = new ConcurrentHashMap<String, Integer>();
+
+	public void inputProcess() {
+		try {
+			Scanner sc = new Scanner(new File(fileNames[Integer.parseInt(Thread
+					.currentThread().getName())]));
+			int bucketName = Integer.parseInt(Thread.currentThread().getName());
+			while (sc.hasNextLine()) {
+				Scanner s2 = new Scanner(sc.nextLine());
+				while (s2.hasNext()) {
+					String word = s2.next();
+					Map wordMap = (Map) mapperWordList.get(bucketName);
+					if (wordMap == null)
+						wordMap = new HashMap();
+					if (wordMap.get(word) != null) {
+						int count = Integer.parseInt(wordMap.get(word)
+								.toString());
+						count++;
+						wordMap.put(word, count);
+						/* System.out.println(word + " " + count); */
+					} else {
+						wordMap.put(word, 1);
+					}
+
+					mapperWordList.put(bucketName, wordMap);
+				}
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+	}
+
+	public void outputProcess() {
+
+		String name = Thread.currentThread().getName();
+		String[] names = name.split(" ");
+		int numberOfBucket = Integer.parseInt(names[1]);
+
+		if (names[1].equalsIgnoreCase("0")) {
+			Map<String,Integer> tempMap = (HashMap<String, Integer>) mapperWordList
+					.get(0);
+			
+			for (Map.Entry<String, Integer> entry : tempMap.entrySet()) {
+				finalMapperWordList.put(entry.getKey(), entry.getValue());
+			}
+			numberOfBucket++;
+		}
+
+		for (int i = 0; i < 5; i++, numberOfBucket++) {
+			// Iterates from bucket five buckets and groups the output
+
+			Map<String, Integer> wordMapOfFiles2 = (Map) mapperWordList
+					.get(numberOfBucket);
+
+			for (Map.Entry<String, Integer> entry : wordMapOfFiles2.entrySet()) {
+				// Get single bucket checks with the wordMapofFiles bucket
+				// which
+				// is zero bucket and if the key word is present adds the
+				// count
+				// of the value with the wordMapofFiles
+				String key = entry.getKey();
+				int value = entry.getValue();
+				int count = 0;
+
+				if (finalMapperWordList.get(key) != null) {
+					count = finalMapperWordList.get(key) + value;
+				} else {
+					count = value;
+				}
+
+				finalMapperWordList.put(key, count);
+
+			}
+
+			// Adding it again to the 0th map. So 0th map contains the
+			// consolidated list.
+		}
+
+		if (names[1].equalsIgnoreCase("6")) {
+			for (Map.Entry<String, Integer> entry : finalMapperWordList
+					.entrySet()) {
+				// Printing the output instead of storing to persistent storage.
+				// Communication between output threads is done through sharing
+				// of finalMapperWordList. And printing is done for the last output process.
+				System.out.println(entry.getKey() + " " + entry.getValue());
+			}
+		}
+
+	}
+
+	public static void main(String[] args) throws InterruptedException {
+		// Number of documents to be assigned to each Thread
+		Thread[] thread = new Thread[numberOfMapperThreads];
+		for (int i = 0; i < numberOfMapperThreads; i++) {
+			thread[i] = new Thread(new Threading(), String.valueOf(i).trim());
+			thread[i].start();
+		}
+
+		Thread outputThread1 = new Thread(new Threading(), String.valueOf(
+				"output 0").trim());
+		outputThread1.start();
+
+		Thread outputThread2 = new Thread(new Threading(), String.valueOf(
+				"output 6").trim());
+		outputThread2.start();
+
+	}
+
+	@Override
+	public void run() {
+
+		if (Thread.currentThread().getName().contains("output")) {
+			try {
+				Thread.sleep(10000);
+				outputProcess();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		} else if (Integer.parseInt(Thread.currentThread().getName()) < numberOfMapperThreads)
+			inputProcess();
+
+	}
+
+}
